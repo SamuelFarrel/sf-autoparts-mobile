@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 
 class MyHomePage extends StatelessWidget {
   MyHomePage({Key? key}) : super(key: key);
-  final List<ShopItem> items = [
-    ShopItem("Lihat Item", Icons.list,Colors.lightBlueAccent),
-    ShopItem("Tambah Item", Icons.add_shopping_cart,Colors.lightBlue),
-    ShopItem("Logout", Icons.logout,Colors.blueAccent),
+  final List<ButtonItem> items = [
+    ButtonItem("Lihat Item", Icons.list,Colors.lightBlueAccent),
+    ButtonItem("Tambah Item", Icons.add_shopping_cart,Colors.lightBlue),
+    ButtonItem("Logout", Icons.logout,Colors.blueAccent),
   ];
 
   // This widget is the home page of your application. It is stateful, meaning
@@ -58,9 +58,9 @@ class MyHomePage extends StatelessWidget {
                 mainAxisSpacing: 10,
                 crossAxisCount: 3,
                 shrinkWrap: true,
-                children: items.map((ShopItem item) {
+                children: items.map((ButtonItem item) {
                   // Iterasi untuk setiap item
-                  return ShopCard(item);
+                  return ButtonCard(item);
                 }).toList(),
               ),
             ],
@@ -71,18 +71,18 @@ class MyHomePage extends StatelessWidget {
   }
 }
 
-class ShopItem {
+class ButtonItem {
   final String name;
   final IconData icon;
   final Color color;
 
-  ShopItem(this.name, this.icon,this.color);
+  ButtonItem(this.name, this.icon,this.color);
 }
 
-class ShopCard extends StatelessWidget {
-  final ShopItem item;
+class ButtonCard extends StatelessWidget {
+  final ButtonItem item;
 
-  const ShopCard(this.item, {super.key}); // Constructor
+  const ButtonCard(this.item, {super.key}); // Constructor
 
   @override
   Widget build(BuildContext context) {

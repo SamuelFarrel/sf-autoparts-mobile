@@ -172,3 +172,269 @@
                         content: Text("Kamu telah menekan tombol ${item.name}!")));
                 },
     ```
+
+
+# Tugas 8
+
+## Perbedaan antara Navigator.push() dan Navigator.pushReplacement()
+- `Navigator.push()`:
+    - Digunakan untuk routing halaman baru dengan menambahkan route halaman baru dalam stack navigation, sehingga user dapat kembali ke halaman sebelumnya dengan tombol back.
+    - Contoh:
+        ```dart
+        Navigator.push(context, 
+            MaterialPageRoute(builder: (context) => NextScreen()));
+        ```
+- `Navigator.pushReplacement()`:
+    - Digunakan untuk routing halaman baru dengan dengan mereplace halaman dimana user berada dengan halaman baru pada stack navigation, sehingga user tidak dapat kembali ke halaman sebelumnya.
+    - Contoh:
+        ```dart
+        Navigator.pushReplacement(context, 
+            MaterialPageRoute(builder: (context) => NextScreen()));
+        ```
+
+## Layout Widget pada Flutter dan Konteks Penggunaannya
+- `Container` : Digunakan untuk mengelompokkan widget lain dan mengatur terhadap layout attribute seperti margin dan padding.
+- `Column` : Digunakan untuk menampilkan widget dalam susunan vertikal.
+- `Row` : Digunakan untuk menampilkan widget dalam susunan horizontal.
+- `ListView` : Digunakan untuk menampilkan daftar elemen scrollable.
+- `Stack` : Digunakan untuk "menumpuk" widget satu di atas yang lain.
+
+## Elemen Input pada Form pada Tugas
+- Pada tugas ini, karena semua input yang diperlukan adalah berupa teks dalam bentuk string dan integer, maka saya menggunakan `TextField` yang diwrap oleh `FormField` atau `FormField` yang contains `TextField`  yaitu `TextFormField`
+- `TextField` digunakan untuk input teks (contoh: nama, email, alamat, dll)
+
+## Penerapan Clean Architecture pada Flutter
+Clean Architecture pada aplikasi Flutter terdiri dari tiga lapisan utama (separation of concerns):
+
+- Domain Layer:
+    - Logika bisnis dan aturan aplikasi.
+    - Model dan use case yang independen dari framework atau teknologi.
+
+- Data Layer:
+    - Implementasi akses data eksternal.
+    - Terdiri dari repository yang mengimplementasikan interface dari domain layer.
+
+- Feature Layer:
+    - Menangani logika UI dan interaksi pengguna.
+    - Menggunakan widget Flutter untuk membangun antarmuka pengguna.
+
+Prinsip Dependency Rule diikuti, dengan domain layer sebagai pusat yang tidak bergantung pada lapisan lain. Struktur direpresentasikan melalui paket atau modul terpisah.
+
+## Cara Implementasi Checklist
+1. Membuat halaman baru formulir untuk menambah item
+- Membuat file baru pada folder `lib` bernama `form.dart`
+- Memakai tiga elemen input :
+    - `TextFormField` untuk input field `name` dengan validasi agar tidak kosong :
+        ```dart
+        ....
+          child: TextFormField(
+                decoration: InputDecoration(
+                  hintText: "Nama Item",
+                  labelText: "Nama Item",
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(5.0),
+                  ),
+                ),
+                onChanged: (String? value) {
+                  setState(() {
+                    _name = value!;
+                  });
+                },
+                validator: (String? value) {
+                  if (value == null || value.isEmpty) {
+                    return "Nama tidak boleh kosong!";
+                  }
+                  return null;
+                },
+              ),
+        ....
+        ```
+    - `TextFormField` untuk input field `amount` dengan validasi apakah input berupa angka (integer) dan tidak kosong :
+        ```dart
+        ....
+
+          child: TextFormField(
+                decoration: InputDecoration(
+                  hintText: "Jumlah",
+                  labelText: "Jumlah",
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(5.0),
+                  ),
+                ),
+                onChanged: (String? value) {
+                  setState(() {
+                    _amount = int.parse(value!);
+                  });
+                },
+                validator: (String? value) {
+                  if (value == null || value.isEmpty) {
+                    return "Jumlah tidak boleh kosong!";
+                  }
+                  if (int.tryParse(value) == null) {
+                    return "Jumlah harus berupa angka!";
+                  }
+                  return null;
+                },
+              ),
+
+        ....
+        ```
+    - `TextFormField` untuk input field `description` dengan validasi agar tidak kosong :
+        ```dart
+        ....
+
+          child: TextFormField(
+                decoration: InputDecoration(
+                  hintText: "Deskripsi",
+                  labelText: "Deskripsi",
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(5.0),
+                  ),
+                ),
+                onChanged: (String? value) {
+                  setState(() {
+                    _description = value!;
+                  });
+                },
+                validator: (String? value) {
+                  if (value == null || value.isEmpty) {
+                    return "Deskripsi tidak boleh kosong!";
+                  }
+                  return null;
+                },
+              ),
+
+        ....
+        ```
+
+- Memiliki tombol save yang akan menyimpan item ke list (bonus) dan menampilkan popup detail item :
+    ```dart
+    ....
+
+      child: ElevatedButton(
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(Colors.blueGrey),
+                  ),
+                  onPressed: () {
+                    if (_formKey.currentState!.validate()) {
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            title: const Text('Item berhasil tersimpan'),
+                            content: SingleChildScrollView(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('Nama: $_name'),
+                                  Text('Jumlah: $_amount'),
+                                  Text('Deskripsi: $_description'),
+                                ],
+                              ),
+                            ),
+                            actions: [
+                              TextButton(
+                                child: const Text('OK'),
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                  _formKey.currentState!.reset();
+                                  Item.itemList.add(Item(_name, _amount, _description));
+                                },
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    }
+                    _formKey.currentState!.reset();
+                  },
+                  child: const Text(
+                    "Save",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+
+    ....
+    ```
+2. Mengarahkan pengguna ke halaman form tambah item baru ketika menekan tombol `Tambah Item` pada halaman utama :
+- Menambahkan kode berikut pada bagian `onTap()` milik class `ButtonCard` :
+    ```dart
+    if (item.name == "Tambah Item"){
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => const FormPage()));}
+    ```
+
+3. Memunculkan data sesuai isi dari formulir yang diisi dalam sebuah pop-up setelah menekan tombol Save pada halaman formulir tambah item baru.
+    ```dart
+    ...
+
+    onPressed: () {
+                    if (_formKey.currentState!.validate()) {
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            title: const Text('Item berhasil tersimpan'),
+                            content: SingleChildScrollView(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('Nama: $_name'),
+                                  Text('Jumlah: $_amount'),
+                                  Text('Deskripsi: $_description'),
+                                ],
+                              ),
+                            ),
+
+    ...
+
+    ```
+
+4. Membuat drawer pada aplikasi
+- Membuat file `left_drawer.dart` pada direktori baru `lib/widgets` :
+    - Drawer memiliki tiga buah opsi yaitu `Main Page`, `Tambah Item`, dan `Daftar Item`
+        ```dart
+        ...
+
+          ListTile(
+            leading: const Icon(Icons.home_outlined),
+            title: const Text('Main Page'),
+            // Bagian redirection ke MyHomePage
+            onTap: () {
+              Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => MyHomePage(),
+                  ));
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.list_sharp),
+            title: const Text('Daftar Item'),
+            // Bagian redirection ke ShopFormPage
+            onTap: () {
+              Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ShowItems(itemList: Item.itemList),
+                  )
+              );
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.add_task),
+            title: const Text('Add Item'),
+            // Bagian redirection ke ShopFormPage
+            onTap: () {
+              Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const FormPage(),
+                  )
+              );
+            },
+          ),
+        
+        ...
+        ```
+    - Pada tiap bagian, jika diklik maka user akan diarahkan ke page sesuai bagian tersebut

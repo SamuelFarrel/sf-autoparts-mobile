@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:sf_autoparts/form.dart';
+import 'package:sf_autoparts/widgets/left_drawer.dart';
+import 'package:sf_autoparts/show_products.dart';
 
 class MyHomePage extends StatelessWidget {
   MyHomePage({Key? key}) : super(key: key);
@@ -29,7 +32,9 @@ class MyHomePage extends StatelessWidget {
           ),
         ),
         backgroundColor: Colors.blueGrey,
+        foregroundColor: Colors.white,
       ),
+      drawer: const LeftDrawer(),
       body: SingleChildScrollView(
         // Widget wrapper yang dapat discroll
         child: Padding(
@@ -96,6 +101,14 @@ class ButtonCard extends StatelessWidget {
             ..hideCurrentSnackBar()
             ..showSnackBar(SnackBar(
                 content: Text("Kamu telah menekan tombol ${item.name}!")));
+          if (item.name == "Tambah Item") {
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => const FormPage()));
+          }
+          else if(item.name == "Lihat Item"){
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => ShowItems(itemList: Item.itemList)));
+          }
         },
         child: Container(
           // Container untuk menyimpan Icon dan Text
